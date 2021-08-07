@@ -1,4 +1,4 @@
-import { Rating } from "../types";
+import { Rating, RatingBreakdown } from "../types";
 import BaseModel from "./BaseModel";
 import { TABLE_NAMES } from "../constants";
 export default class RatingModel extends BaseModel {
@@ -12,7 +12,7 @@ export default class RatingModel extends BaseModel {
     return await this.getModel().create({ rating: rating })
   }
 
-  async getRatingBreakdown(): Promise<any>{
+  async getRatingBreakdown(): Promise<Array<RatingBreakdown>>{
     let res = await this.getModel().findAll({
       attributes: ['rating', [this.sequelize.fn('COUNT', this.sequelize.col('rating')), 'count']], group: ['rating'], raw:true
     })

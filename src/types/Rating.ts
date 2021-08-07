@@ -9,3 +9,8 @@ export interface Review extends BaseInterface {
   formInputId: string
   remark: string
 }
+
+export interface RatingBreakdown {
+  rating: number
+  count: number
+}

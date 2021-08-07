@@ -13,7 +13,7 @@ export default class BaseModel{
     return this.tableName
   }
 
-  findAll(){
+  findAll():Array<object>{
     return this.model.findAll()
   }
 

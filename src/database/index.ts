@@ -80,7 +80,7 @@ export default class Database {
     })
     
     await sequelize.sync({ force: forceDrop }) //force: true will drop all existing tables before recreating
-    return true
+    return sequelize
     
   }
 

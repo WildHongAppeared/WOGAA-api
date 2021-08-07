@@ -17,6 +17,10 @@ Rating API
 - Review table has a one to one foreign key to Rating table to identify the remarks are tied to which rating score
 - Sequelize is used as ORM to make the SQL operations easier (raw query string susceptible to injection)
 - Unit test only covers all the models and non of the API as the API conforms to single responsibility use and therefore, assumption is that if the model operation works, the API should not fail
+- Rating breakdown is in the form of array instead of JSON for easier searching and to reduce unnecessary parsing between array to suggested JSON format in spec
+  - Format : 
+    - rating: number
+    - count: number
 ---
 ## Steps to run
 - Install NodeJS [For Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-16-04)

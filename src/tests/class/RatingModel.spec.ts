@@ -4,11 +4,12 @@ import 'mocha'
 import Database from '../../database';
 let db: Database
 let ratingModel: RatingModel
+let sequelize:any
 
 before(async()=> {
   db = new Database()
-  await db.initDatabaseWithValues(true)
-  ratingModel = new RatingModel(db.RatingModel)
+  sequelize = await db.initDatabaseWithValues(true)
+  ratingModel = new RatingModel(db.RatingModel,sequelize)
 })
 
 describe('RatingModel Unit Test', async () => {
@@ -28,6 +29,13 @@ describe('RatingModel Unit Test', async () => {
     expect(rating[0].id).to.not.be.null
     expect(rating[0].updatedAt).to.not.be.null 
     expect(rating[0].createdAt).to.not.be.null 
+  })
+
+  it('Should get rating breakdown', async () => {
+    let rating = await ratingModel.getRatingBreakdown()
+    expect(rating.length).to.eql(1)
+    expect(rating[0].rating).to.eql(5)
+    expect(rating[0].count).to.eql(2)
   })
 
 

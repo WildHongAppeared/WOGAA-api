@@ -6,7 +6,7 @@ import { Response, Request} from 'express'
 import Database from './database';
 import { RatingModel, FormInputModel, ReviewModel } from './class'
 let db = new Database()
-
+let sequelize:any 
 
 app.use(cors());
 app.use(express.json())
@@ -33,9 +33,27 @@ app.post( "/api/v1/rating/create", async ( req:Request, res:Response ) => {
   }
   try {
     rating = Number(rating)
-    let ratingModel = new RatingModel(db.RatingModel)
+    let ratingModel = new RatingModel(db.RatingModel, sequelize)
     let createdRating = await ratingModel.insertBaseRating(rating)
     res.status(200).send(createdRating)
+  } catch (e){
+    res.status(500).send(e.errorMessage)
+  }
+})
+
+
+// GET api to get rating breakdown
+// request parameter: -
+// response: 
+//    Array:
+//      count: number
+//      rating: number
+app.get( "/api/v1/rating/breakdown", async ( req:Request, res:Response ) => { 
+  try {
+    let ratingModel = new RatingModel(db.RatingModel, sequelize)
+    let breakdown = await ratingModel.getRatingBreakdown()
+    console.log('@BREAKDOWN - ', breakdown)
+    res.status(200).send(breakdown)
   } catch (e){
     res.status(500).send(e.errorMessage)
   }
@@ -49,7 +67,7 @@ app.post( "/api/v1/rating/create", async ( req:Request, res:Response ) => {
 //  formInputId : number|string
 //   remark : string
 // response: Array<Review>
-app.post( "/api/v1/rating/:ratingId/review", async ( req:Request, res:Response ) => { //in ideal scenario would use router for different "microservices"
+app.post( "/api/v1/rating/:ratingId/review", async ( req:Request, res:Response ) => { 
   let { ratingId } = req.params
   let body = req.body
   if(!Array.isArray(body)){
@@ -75,7 +93,7 @@ app.post( "/api/v1/rating/:ratingId/review", async ( req:Request, res:Response )
 //  subtitle : string
 //  type: "text"|"email"|"linear_scale"
 // response: FormInput
-app.post( "/api/v1/form/create", async ( req:Request, res:Response ) => { //in ideal scenario would use router for different "microservices"
+app.post( "/api/v1/form/create", async ( req:Request, res:Response ) => { 
   let { title, subtitle, type } = req.body 
   if(!(title) || title.length < 1){
     res.status(400).send('Invalid title')
@@ -92,7 +110,7 @@ app.post( "/api/v1/form/create", async ( req:Request, res:Response ) => { //in i
 // GET api to get all form input
 // request parameter: -
 // response: Array<FormInput>
-app.get( "/api/v1/form/list", async ( req:Request, res:Response ) => { //in ideal scenario would use router for different "microservices"
+app.get( "/api/v1/form/list", async ( req:Request, res:Response ) => { 
   let formInputModel = new FormInputModel(db.FormInputModel)
   try {
     let createdFormInput = await formInputModel.findAll()
@@ -103,7 +121,8 @@ app.get( "/api/v1/form/list", async ( req:Request, res:Response ) => { //in idea
 })
 
 // start the Express server
-db.initDatabaseWithValues().then(() => { //initialize database before starting express
+db.initDatabaseWithValues().then((s) => { //initialize database before starting express
+  sequelize = s
   app.listen( port, () => {
     console.log( `server started at http://localhost:${ port }` );
 } );

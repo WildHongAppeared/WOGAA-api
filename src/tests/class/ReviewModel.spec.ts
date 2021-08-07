@@ -10,11 +10,12 @@ let formInputModel: FormInputModel
 let rating: Rating
 let formInput: FormInput
 let review: Review
+let sequelize:any
 
 before(async()=> {
   db = new Database()
-  await db.initDatabaseWithValues(true)
-  ratingModel = new RatingModel(db.RatingModel)
+  sequelize = await db.initDatabaseWithValues(true)
+  ratingModel = new RatingModel(db.RatingModel, sequelize)
   reviewModel = new ReviewModel(db.ReviewModel)
   formInputModel = new FormInputModel(db.FormInputModel)
   rating = await ratingModel.insertBaseRating(5)

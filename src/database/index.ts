@@ -12,6 +12,7 @@ export default class Database {
     var sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PWD, {
       host: process.env.DB_HOST,
       dialect: 'mysql',
+      port: Number(process.env.PORT)
     });
     
     this.FormInputModel = sequelize.define(TABLE_NAMES.FORM_INPUT, {

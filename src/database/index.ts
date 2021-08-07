@@ -15,7 +15,7 @@ export default class Database {
       port: Number(process.env.PORT)
     });
     
-    this.FormInputModel = sequelize.define(TABLE_NAMES.FORM_INPUT, {
+    this.FormInputModel = sequelize.define(TABLE_NAMES.FORM_INPUT, { //create form input table if does not exist
       id: {
         type: INTEGER,
         autoIncrement: true,
@@ -37,7 +37,7 @@ export default class Database {
       freezeTableName: true 
     })
 
-    this.RatingModel = sequelize.define(TABLE_NAMES.RATING, {
+    this.RatingModel = sequelize.define(TABLE_NAMES.RATING, { //create rating table if does not exist
       id: {
         type: INTEGER,
         autoIncrement: true,
@@ -51,7 +51,7 @@ export default class Database {
       freezeTableName: true 
     })
 
-    this.ReviewModel = sequelize.define(TABLE_NAMES.REVIEW, {
+    this.ReviewModel = sequelize.define(TABLE_NAMES.REVIEW, { //create review table if does not exist
       id: {
         type: INTEGER,
         autoIncrement: true,
@@ -65,24 +65,22 @@ export default class Database {
       freezeTableName: true 
     })
 
-    this.RatingModel.hasMany(this.ReviewModel, {
+    this.RatingModel.hasMany(this.ReviewModel, { // review should be tied to rating id (explained in readme under Design Decisions)
       foreignKey: {
         name: 'ratingId',
         allowNull: false
       }
     })
 
-    this.ReviewModel.belongsTo(this.FormInputModel, {
+    this.ReviewModel.belongsTo(this.FormInputModel, { // review should be tied to form input id (explained in readme under Design Decisions)
       foreignKey: {
         name: 'formInputId',
         allowNull: false
       }
     })
     
-    await sequelize.sync({ force: forceDrop })
+    await sequelize.sync({ force: forceDrop }) //force: true will drop all existing tables before recreating
     return true
-
-    //const insertForm = `INSERT INTO ${TABLE_NAMES.FORM_INPUT} (title, subtitle, required, type) VALUES ("What did you like the most?", "Tell us about your experience", 0, "text"), ("What did you like the least?", "Let us know how we can improve", 0, "text"), ("Give us your rating", "", 0, "linear_scale"), ("Your email", "Your email address", 0, "email");`
     
   }
 

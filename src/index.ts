@@ -21,17 +21,34 @@ app.get('/health', ( req:Request, res:Response ) => { //for health check
   res.status(200).send(data);
 });
 
-app.post( "/api/v1/rating/create", async ( req:Request, res:Response ) => { //in ideal scenario would use router for different "microservices"
+// POST api to create rating
+// request parameter: 
+// body: 
+// rating : number|string
+// response: Rating
+app.post( "/api/v1/rating/create", async ( req:Request, res:Response ) => { 
   let { rating } = req.body 
   if(isNaN(rating) || Number(rating) < 0){
     res.status(400).send('Invalid rating score')
   }
-  rating = Number(rating)
-  let ratingModel = new RatingModel(db.RatingModel)
-  let createdRating = await ratingModel.insertBaseRating(rating)
-  res.status(200).send(createdRating)
+  try {
+    rating = Number(rating)
+    let ratingModel = new RatingModel(db.RatingModel)
+    let createdRating = await ratingModel.insertBaseRating(rating)
+    res.status(200).send(createdRating)
+  } catch (e){
+    res.status(500).send(e.errorMessage)
+  }
 })
 
+// POST api to create rating
+// request parameter: 
+// path: 
+//  ratingId : string|number
+// body: Array
+//  formInputId : number|string
+//   remark : string
+// response: Array<Review>
 app.post( "/api/v1/rating/:ratingId/review", async ( req:Request, res:Response ) => { //in ideal scenario would use router for different "microservices"
   let { ratingId } = req.params
   let body = req.body
@@ -39,33 +56,54 @@ app.post( "/api/v1/rating/:ratingId/review", async ( req:Request, res:Response )
     res.status(400).send('Invalid body')
   }
   let reviewModel = new ReviewModel(db.ReviewModel)
-  let createdReviewPromises = body.map(async(review:any) => {
-    let ret = await reviewModel.insertReview(review.remark, review.formInputId, Number(ratingId))
-    console.log('@REVIEW - ', ret)
-    return ret
-  })
-  let createdReviews = await Promise.all(createdReviewPromises)
-  res.status(200).send(createdReviews)
+  try {
+    let createdReviewPromises = body.map(async(review:any) => {
+      let ret = await reviewModel.insertReview(review.remark, Number(review.formInputId), Number(ratingId))
+      return ret
+    })
+    let createdReviews = await Promise.all(createdReviewPromises)
+    res.status(200).send(createdReviews)
+  } catch (e){
+    res.status(500).send(e.errorMessage)
+  }
 })
 
+// POST api to create form input
+// request parameter: 
+// body: 
+//  title : string
+//  subtitle : string
+//  type: "text"|"email"|"linear_scale"
+// response: FormInput
 app.post( "/api/v1/form/create", async ( req:Request, res:Response ) => { //in ideal scenario would use router for different "microservices"
   let { title, subtitle, type } = req.body 
   if(!(title) || title.length < 1){
     res.status(400).send('Invalid title')
   }
   let formInputModel = new FormInputModel(db.FormInputModel)
-  let createdFormInput = await formInputModel.insertFormInput(title, subtitle, type)
-  res.status(200).send(createdFormInput)
+  try {
+    let createdFormInput = await formInputModel.insertFormInput(title, subtitle, type)
+    res.status(200).send(createdFormInput)
+  } catch (e){
+    res.status(500).send(e.errorMessage)
+  }
 })
 
-app.post( "/api/v1/form/list", async ( req:Request, res:Response ) => { //in ideal scenario would use router for different "microservices"
+// GET api to get all form input
+// request parameter: -
+// response: Array<FormInput>
+app.get( "/api/v1/form/list", async ( req:Request, res:Response ) => { //in ideal scenario would use router for different "microservices"
   let formInputModel = new FormInputModel(db.FormInputModel)
-  let createdFormInput = await formInputModel.findAll()
-  res.status(200).send(createdFormInput)
+  try {
+    let createdFormInput = await formInputModel.findAll()
+    res.status(200).send(createdFormInput)
+  } catch (e){
+    res.status(500).send(e.errorMessage)
+  }
 })
 
 // start the Express server
-db.initDatabaseWithValues().then(() => {
+db.initDatabaseWithValues().then(() => { //initialize database before starting express
   app.listen( port, () => {
     console.log( `server started at http://localhost:${ port }` );
 } );

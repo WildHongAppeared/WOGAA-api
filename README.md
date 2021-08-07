@@ -7,7 +7,16 @@ Rating API
   2) Yarn 1.22 or above
 - MySQL
 ---
-
+## Assumptions
+- FormInput field only accept `text`, `email` and `linear_scale` as accepted value for field `type`. Other values are not handled
+- All routes are stored in one file as there is only a few routes. In ideal scenario, each "microservice" should have their own route file (For example, rating would be one file and form would be another file)
+---
+## Design Decisions
+- Rating table is used to store the rating score only
+- Review table has a one to many foreign key to FormInput to identify which remark belongs to which particular form field
+- Review table has a one to one foreign key to Rating table to identify the remarks are tied to which rating score
+- Sequelize is used as ORM to make the SQL operations easier (raw query string susceptible to injection)
+- Unit test only covers all the models and non of the API as the API conforms to single responsibility use and therefore, assumption is that if the model operation works, the API should not fail
 ---
 ## Steps to run
 - Install NodeJS [For Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-16-04)

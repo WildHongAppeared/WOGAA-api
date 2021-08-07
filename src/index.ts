@@ -122,7 +122,7 @@ app.get( "/api/v1/form/list", async ( req:Request, res:Response ) => {
 
 // start the Express server
 db.initDatabaseWithValues().then((s) => { //initialize database before starting express
-  sequelize = s
+  sequelize = s //store sequelize so can pass to models that need to do complicated queries
   app.listen( port, () => {
     console.log( `server started at http://localhost:${ port }` );
 } );

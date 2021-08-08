@@ -9,6 +9,7 @@ import { Sequelize } from 'sequelize/types';
 const { check } = require('express-validator');
 let db = new Database()
 let sequelize:Sequelize
+var string = require("string-sanitizer");
 
 app.use(cors());
 app.use(express.json())
@@ -68,7 +69,7 @@ app.get( "/api/v1/rating/breakdown", async ( req:Request, res:Response ) => {
 //  formInputId : number|string
 //   remark : string
 // response: Array<Review>
-app.post( "/api/v1/rating/:ratingId/review", [check('formInputId').isNumeric().trim().escape(), check('remark').not().isEmpty().trim().escape()], async ( req:Request, res:Response ) => { 
+app.post( "/api/v1/rating/:ratingId/review", async ( req:Request, res:Response ) => { 
   let { ratingId } = req.params
   let body = req.body
   if(!Array.isArray(body)){
@@ -77,7 +78,8 @@ app.post( "/api/v1/rating/:ratingId/review", [check('formInputId').isNumeric().t
   let reviewModel = new ReviewModel(db.ReviewModel)
   try {
     let createdReviewPromises = body.map(async(review:any) => {
-      let ret = await reviewModel.insertReview(review.remark, Number(review.formInputId), Number(ratingId))
+      let remark = string.sanitize(review.remark)
+      let ret = await reviewModel.insertReview(remark, Number(review.formInputId), Number(ratingId))
       return ret
     })
     let createdReviews = await Promise.all(createdReviewPromises)

@@ -5,8 +5,10 @@ const cors = require('cors');
 import { Response, Request} from 'express'
 import Database from './database';
 import { RatingModel, FormInputModel, ReviewModel } from './class'
+import { Sequelize } from 'sequelize/types';
+const { check } = require('express-validator');
 let db = new Database()
-let sequelize:any 
+let sequelize:Sequelize
 
 app.use(cors());
 app.use(express.json())
@@ -26,7 +28,7 @@ app.get('/health', ( req:Request, res:Response ) => { //for health check
 // body: 
 // rating : number|string
 // response: Rating
-app.post( "/api/v1/rating/create", async ( req:Request, res:Response ) => { 
+app.post( "/api/v1/rating/create",[check('rating').isNumeric().trim().escape()] ,async ( req:Request, res:Response ) => { 
   let { rating } = req.body 
   if(isNaN(rating) || Number(rating) < 0){
     res.status(400).send('Invalid rating score')
@@ -52,7 +54,6 @@ app.get( "/api/v1/rating/breakdown", async ( req:Request, res:Response ) => {
   try {
     let ratingModel = new RatingModel(db.RatingModel, sequelize)
     let breakdown = await ratingModel.getRatingBreakdown()
-    console.log('@BREAKDOWN - ', breakdown)
     res.status(200).send(breakdown)
   } catch (e){
     res.status(500).send(e.errorMessage)
@@ -67,7 +68,7 @@ app.get( "/api/v1/rating/breakdown", async ( req:Request, res:Response ) => {
 //  formInputId : number|string
 //   remark : string
 // response: Array<Review>
-app.post( "/api/v1/rating/:ratingId/review", async ( req:Request, res:Response ) => { 
+app.post( "/api/v1/rating/:ratingId/review", [check('formInputId').isNumeric().trim().escape(), check('remark').not().isEmpty().trim().escape()], async ( req:Request, res:Response ) => { 
   let { ratingId } = req.params
   let body = req.body
   if(!Array.isArray(body)){
@@ -93,7 +94,7 @@ app.post( "/api/v1/rating/:ratingId/review", async ( req:Request, res:Response )
 //  subtitle : string
 //  type: "text"|"email"|"linear_scale"
 // response: FormInput
-app.post( "/api/v1/form/create", async ( req:Request, res:Response ) => { 
+app.post( "/api/v1/form/create", [check('title').not().isEmpty().trim().escape(), check('subtitle').not().isEmpty().trim().escape(), check('type').not().isEmpty().trim().escape()], async ( req:Request, res:Response ) => { 
   let { title, subtitle, type } = req.body 
   if(!(title) || title.length < 1){
     res.status(400).send('Invalid title')

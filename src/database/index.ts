@@ -6,7 +6,7 @@ dotenv.config();
 
 export default class Database {
   FormInputModel: ModelDefined<FormInput, FormInputCreationAttributes>
-  RatingModel: ModelDefined<Rating,RatingCreationAttributes>
+  RatingModel: ModelDefined<Rating, RatingCreationAttributes>
   ReviewModel: ModelDefined<Review, ReviewCreationAttributes>
 
   async initDatabaseWithValues(forceDrop = false){

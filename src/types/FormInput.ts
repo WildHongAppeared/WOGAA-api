@@ -1,4 +1,5 @@
 import { BaseInterface } from "./Base";
+import { Optional } from "sequelize";
 
 const enum FORM_TYPE {
   email = 'email',
@@ -11,3 +12,5 @@ export interface FormInput extends BaseInterface {
   subtitle?: string
   type: FORM_TYPE
 }
+
+export interface FormInputCreationAttributes extends Optional<FormInput, 'id' | 'updatedAt' | 'createdAt'> {};

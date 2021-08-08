@@ -1,5 +1,3 @@
-
-
 import { TABLE_NAMES } from "../constants";
 export default class BaseModel{
   private tableName: TABLE_NAMES 

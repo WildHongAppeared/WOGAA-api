@@ -1,9 +1,10 @@
-import { Rating, RatingBreakdown } from "../types";
+import { Rating, RatingBreakdown, RatingCreationAttributes } from "../types";
 import BaseModel from "./BaseModel";
 import { TABLE_NAMES } from "../constants";
+import { ModelDefined } from "sequelize/types";
 export default class RatingModel extends BaseModel {
   sequelize: any
-  constructor(model:any, sequelize: any){
+  constructor(model:ModelDefined<Rating,RatingCreationAttributes>, sequelize: any){
     super(TABLE_NAMES.RATING, model)
     this.sequelize = sequelize
   }

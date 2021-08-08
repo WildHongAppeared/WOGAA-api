@@ -1,12 +1,13 @@
-import { Sequelize, STRING, INTEGER } from "sequelize";
+import { Sequelize, STRING, INTEGER, ModelDefined } from "sequelize";
 import * as dotenv from "dotenv";
 import { TABLE_NAMES } from "../constants";
+import { FormInput, Rating, RatingCreationAttributes, Review, ReviewCreationAttributes, FormInputCreationAttributes } from "../types";
 dotenv.config();
 
 export default class Database {
-  FormInputModel:any
-  RatingModel:any
-  ReviewModel:any
+  FormInputModel: ModelDefined<FormInput, FormInputCreationAttributes>
+  RatingModel: ModelDefined<Rating,RatingCreationAttributes>
+  ReviewModel: ModelDefined<Review, ReviewCreationAttributes>
 
   async initDatabaseWithValues(forceDrop = false){
     var sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PWD, {
